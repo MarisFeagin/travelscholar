@@ -1,36 +1,70 @@
-const addPatientButton = document.getElementById("addPatient");
-const report = document.getElementById("report");
-const btnSearch = document.getElementById('searchBtn');
-const patients = [];
+let data = {};
 
-    function searchCondition() {
-        const input = document.getElementById('conditionInput').value.toLowerCase();
-        const resultDiv = document.getElementById('result');
-        resultDiv.innerHTML = '';
+fetch('travel_recommendation_api.json') 
+    .then(response => response.json())
+    .then(fetchedData => {
+        data = fetchedData;
+    })
+    .catch(error => {
+        console.error("Error in fetching data.", error);  
+    });
 
-        fetch('travel_recommendation_api.json')
-          .then(response => response.json())
-          .then(data => {
-            const cities = data.cities.find(item => item.name.toLowerCase() === input);
+function filterResults(searchTerm) {
+    const resultsContainer = document.getElementById("resultsContainer");
+    resultsContainer.innerHTML = '';
 
-            if (citien) {
-              const symptoms = condition.symptoms.join(', ');
-              const prevention = condition.prevention.join(', ');
-              const treatment = condition.treatment;
+    const allResults = [];
 
-              resultDiv.innerHTML += `<h2>${condition.name}</h2>`;
-              resultDiv.innerHTML += `<img src="${condition.imagesrc}" alt="hjh">`;
+    data.countries.forEach(country => {
+        if (country.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+            allResults.push({ type: 'country', name: country.name, description: '' });
+        }
 
-              resultDiv.innerHTML += `<p><strong>Symptoms:</strong> ${symptoms}</p>`;
-              resultDiv.innerHTML += `<p><strong>Prevention:</strong> ${prevention}</p>`;
-              resultDiv.innerHTML += `<p><strong>Treatment:</strong> ${treatment}</p>`;
-            } else {
-              resultDiv.innerHTML = 'Location not found.';
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            resultDiv.innerHTML = 'An error occurred while fetching data.';
-          });
-      }
-        btnSearch.addEventListener('click', searchCondition);
+        country.cities.forEach(city => {
+           if (city.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+               allResults.push({ type:'city', name: city.name, description: city.description, imageUrl: city.imageUrl});
+           }
+        });
+    });
+
+    data.temples.forEach(temple => {
+        if (temple.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+            allResults.push({ type: 'temple', name: temple.name, description: temple.description, imageUrl: temple.imageUrl});
+        }    
+    });
+
+    data.beaches.forEach(beach => {
+        if (beach.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+            allResults.push({ type: 'beach', name: beach.name, description: beach.description, imageUrl: beach.imageUrl});
+        }    
+    });
+    
+    if (allResults.length === 0) {
+        resultsContainer.innerHTML = '<p>No results found.</p>';
+    } else {
+        allResults.forEach(result => {
+            const resultDiv = document.createElement("div");
+            resultDiv.classList.add("result-item");
+            resultDiv.innerHTML = `
+            <h3>${result.name}</h3>
+            ${result.imageUrl ? `<img src="${result.imageUrl}" alt="${result.name}" width="50%">` : ''}
+            <p>${result.description}</p>
+            <button>Visit</button>
+            `;
+            resultsContainer.appendChild(resultDiv);
+        });
+    }
+    
+}
+
+// Submit Button to start displaying results
+function submitSearch() {
+    const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+    filterResults(searchTerm);
+}
+
+// Reset Button to reset results
+function resetSearch() {
+    document.getElementById("searchInput").value = ''; // Clear search field
+    document.getElementById("resultsContainer").innerHTML = ''; // Clear results
+}

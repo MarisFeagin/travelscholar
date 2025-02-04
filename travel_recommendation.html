@@ -12,13 +12,14 @@
           <li><a href="./travel_recommendation.html" id="home">Home </a></li>
           <li><a href="./travel_recommendation_about.html" id="about">About Us </a></li>
           <li><a href="./travel_recommendation_contact.html" id="contact">Contact Us </a></li>
-          <li><input type="text" placeholder="Search..." id="search"></li>
-          <li><button type="submit" id=searchBtn>Search</button></li>
-          <li><button type="reset" id=resetBtn>Reset</button></li>
+          <li><input type="text" placeholder="Search..." id="searchInput"></li>
+          <li><button type="submit" onclick="submitSearch()" id=searchBtn>Search</button></li>
+          <li><button type="reset" onclick="resetSearch()" id=resetBtn>Reset</button></li>
         </ul>
     </nav>
     
     <div id="homepage">
+      <br>
       <h2>ADVENTURE
         KNOWLEDGE
         CULTURE
@@ -27,7 +28,10 @@
       <p>It's time you step out into the greater world and discover new ways of life. Are you ready?</p>
       <button type="link" id="bookBtn">BOOK NOW</button>
       <br>
+      <br>
       <a href src="https://bsky.app"><img src="./images/Bluesky_Logo.svg.png" class="social" height="30px" widht="30px"></a>
+
+      <div id ="resultsContainer"></div>
     </div>
 
 <script src="./travel_recommendation.js"></script>
